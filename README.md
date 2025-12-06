@@ -1,6 +1,6 @@
 # ID-SSLNet
 Source code of ID-SSLNet. 
-<img src="docs/abs.png" align="right" width="30%">
+<img src="doc/abs.png" align="right" width="30%">
 
 ## TOTD
 More information will be released.
