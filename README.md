@@ -1,7 +1,7 @@
 # ID-SSLNet
 Source code of ID-SSLNet. 
 
-<img src="doc/abs.png" width="30%">
+<img src="doc/abs.png" width="60%">
 
 ## TODO
 ```
