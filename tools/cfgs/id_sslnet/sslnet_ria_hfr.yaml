@@ -2,7 +2,7 @@ CLASS_NAMES: ['roundabout','go_straight','turn_left','turn_right','left_straight
 
 DATA_CONFIG:
     _BASE_CONFIG_: /home/ken/workspace/OpenPCDet/tools/cfgs/dataset_configs/ssl_homemade_dataset.yaml
-    POINT_CLOUD_RANGE: [0., -10., -1., 20., 10., 3.]
+    POINT_CLOUD_RANGE: [0., -16., -1., 32., 16., 3.]
 
     DATA_AUGMENTOR:
         DISABLE_AUG_LIST: ['placeholder']
@@ -73,23 +73,20 @@ MODEL:
     NAME: CenterPoint
 
     VFE:
-        NAME: MeanVFE
+        # NAME: MeanVFE
+        NAME: RIA_VFE
 
     BACKBONE_3D:
         NAME: VoxelResBackBone8x
 
     MAP_TO_BEV:
-        NAME: HeightCompression
-        NUM_BEV_FEATURES: 512
-
-    BACKBONE_2D:
-        NAME: BaseBEVBackbone
-
-        LAYER_NUMS: [5, 5]
-        LAYER_STRIDES: [1, 2]
-        NUM_FILTERS: [128, 256]
-        UPSAMPLE_STRIDES: [1, 2]
-        NUM_UPSAMPLE_FILTERS: [256, 256]
+        NAME: HeightFeatureRefineNet
+        NUM_BEV_FEATURES: 256
+        PRE_CONV: 256
+        INPUT_CHANNELS: 512
+        OUT_CHANNELS: 256
+        NUM_HEIGHT: 10
+ 
 
     DENSE_HEAD:
         NAME: CenterHead
@@ -129,7 +126,7 @@ MODEL:
 
         POST_PROCESSING:
             SCORE_THRESH: 0.1
-            POST_CENTER_LIMIT_RANGE: [0., -5., -1., 10., 5., 3.0]
+            POST_CENTER_LIMIT_RANGE: [0., -16., -1., 32., 16., 3.]
             MAX_OBJ_PER_SAMPLE: 500
             NMS_CONFIG:
                 NMS_TYPE: nms_gpu
