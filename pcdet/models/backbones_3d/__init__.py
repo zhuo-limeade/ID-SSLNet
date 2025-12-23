@@ -1,7 +1,5 @@
 from .pointnet2_backbone import PointNet2Backbone, PointNet2MSG
-from .spconv_backbone import VoxelBackBone8x, VoxelResBackBone8x, VoxelResBackBone8x_FV, VoxelResBackBone8x_mod1,\
-    VoxelResBackBone8x_mod2, VoxelResBackBone8x_mod3, VoxelResBackBone8x_mod22_7, VoxelResBackBone8x_mod2_1, \
-        VoxelBackBone8x_mod1, VoxelBackBone8x_mod2
+from .spconv_backbone import VoxelBackBone8x, VoxelResBackBone8x
 from .spconv_backbone_2d import PillarBackBone8x, PillarRes18BackBone8x
 from .spconv_backbone_focal import VoxelBackBone8xFocal
 from .spconv_backbone_voxelnext import VoxelResBackBone8xVoxelNeXt, VoxelResBackBone8xVoxelNeXt_mod1
@@ -12,7 +10,6 @@ from .IASSD_backbone import IASSD_Backbone
 from .spconv_backbone_voxelnext_sps import VoxelResBackBone8xVoxelNeXtSPS
 from .spconv_backbone_voxelnext2d_sps import VoxelResBackBone8xVoxelNeXt2DSPS
 
-from .sslstack_backbone import VoxelBackBone8x_SSL
 
 __all__ = {
     'VoxelBackBone8x': VoxelBackBone8x,
@@ -29,19 +26,7 @@ __all__ = {
     'PillarRes18BackBone8x': PillarRes18BackBone8x,
     'DSVT': DSVT,
     'IASSD_Backbone': IASSD_Backbone,
-    
-    'VoxelResBackBone8x_FV': VoxelResBackBone8x_FV,
-    'VoxelBackBone8x_mod1': VoxelBackBone8x_mod1,
-    'VoxelBackBone8x_mod2': VoxelBackBone8x_mod2,
-    'VoxelResBackBone8x_mod1': VoxelResBackBone8x_mod1,
-    'VoxelResBackBone8x_mod2': VoxelResBackBone8x_mod2,
-    'VoxelResBackBone8x_mod2_1': VoxelResBackBone8x_mod2_1,
-    'VoxelResBackBone8x_mod3': VoxelResBackBone8x_mod3,
-    'VoxelResBackBone8x_mod22_7': VoxelResBackBone8x_mod22_7,
-    'UNetV2_mod1': UNetV2_mod1,
-    'VoxelResBackBone8xVoxelNeXt_mod1': VoxelResBackBone8xVoxelNeXt_mod1,
 
-    'VoxelBackBone8x_SSL' : VoxelBackBone8x_SSL,
 
     
 }
