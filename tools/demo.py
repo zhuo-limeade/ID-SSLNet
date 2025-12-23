@@ -70,12 +70,11 @@ def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
     parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/kitti_models/pointpillar.yaml',
                         help='specify the config for demo')
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/output/22-6/second_mod1/default/second_mod1.yaml',
-    #                     help='specify the config for demo')
+
     parser.add_argument('--data_path', type=str, default='/home/ken/workspace/OpenPCDet/data/kitti/training/velodyne/',
                         help='specify the point cloud data file or directory')
     parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/tools/pointpillar_7728.pth', help='specify the pretrained model')
-    # parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/22-6/second_mod1/default/ckpt/checkpoint_epoch_100.pth', help='specify the pretrained model')
+
     parser.add_argument('--ext', type=str, default='.bin', help='specify the extension of your point cloud data file')
 
     args = parser.parse_args()
@@ -100,46 +99,20 @@ def main():
     model.load_params_from_file(filename=args.ckpt, logger=logger, to_cpu=True)
     model.cuda()
     model.eval()
-    # draw_bev = Draw_BEV()
-    # demo_dataset = DataLoader(demo_dataset, num_workers=4)
+
     with torch.no_grad():
         for idx, data_dict in enumerate(demo_dataset):
             logger.info(f'Visualized sample index: \t{idx + 1}')
             data_dict = demo_dataset.collate_batch([data_dict])
             load_data_to_gpu(data_dict)
-            # print('*'*100)
-            # start_time = time.time()
+
             pred_dicts, _ = model.forward(data_dict)
             print(pred_dicts[0].keys())
-            score_indices = pred_dicts[0]['pred_scores']>.4999
+            score_indices = pred_dicts[0]['pred_scores']>.5-1e-4
             pred_dicts[0]['pred_scores'] = pred_dicts[0]['pred_scores'][score_indices]
             pred_dicts[0]['pred_labels'] = pred_dicts[0]['pred_labels'][score_indices]
             pred_dicts[0]['pred_boxes'] = pred_dicts[0]['pred_boxes'][score_indices, :]
-            # end_time1 = time.time()
-            # draw_bev.generate_bev(
-            #     pc_data = data_dict['points'][:, 1:],
-            #     b_boxs = pred_dicts[0]['pred_boxes'],
-            #     # box_labels = None,
-            #     box_labels = pred_dicts[0]['pred_labels'],
-            #     box_thickness=15,
-            #     scaling = 6,
-            #     show_bev_mode='video'
-            # )
-            # end_time2 = time.time()
-            # print('spending time1:', end_time1-start_time)
-            # print('spending time2:', end_time2-end_time1)
-            # kdr = Kitti_Dimension_Reduction()
-            # end_time3 = time.time()
-            # kdr.generate_bev(
-            #     pc_data = data_dict['points'][:, 1:],
-            #     b_boxs = pred_dicts[0]['pred_boxes'],
-            #     # box_labels = None,
-            #     box_labels = pred_dicts[0]['pred_labels'],
-            #     box_thickness=15,
-            #     scaling = 6,
-            #     show_bev_mode='plt'
-            # )
-            # print('spending time3:', time.time()-end_time3)
+
             V.draw_scenes(
                 points=data_dict['points'][:, 1:], 
                 ref_boxes=pred_dicts[0]['pred_boxes'],

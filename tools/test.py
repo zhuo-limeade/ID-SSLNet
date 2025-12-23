@@ -20,24 +20,15 @@ from pcdet.utils import common_utils
 
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/kitti_models/pointpillar.yaml', help='specify the config for training')
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/kitti_models/pillarnet.yaml', help='specify the config for training')
-    parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/homemade/coke.yaml', help='specify the config for training')
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/nuscenes_models/cbgs_dyn_pp_centerpoint.yaml', help='specify the config for training')
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/nuscenes_models/cbgs_voxel0075_voxelnext_mod1.yaml', help='specify the config for training')
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/sslstack/voxel_rcnn.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
 
-    parser.add_argument('--batch_size', type=int, default=1, required=False, help='batch size for training')
-    parser.add_argument('--workers', type=int, default=1, help='number of workers for dataloader')
+    parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/sslnet/sslnet_ria_hfr.yaml', help='specify the config for training')
+
+    parser.add_argument('--batch_size', type=int, default=8, required=False, help='batch size for training')
+    parser.add_argument('--workers', type=int, default=8, help='number of workers for dataloader')
     parser.add_argument('--extra_tag', type=str, default='default', help='extra tag for this experiment')
-    # parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/ssl_voxel_rcnn_ssl_3/voxel_rcnn_ssl/default/ckpt/checkpoint_epoch_1000.pth', help='checkpoint to start from')
-    parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/coke4/coke/default/ckpt/checkpoint_epoch_500.pth', help='checkpoint to start from')
-    # parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/voxel_rcnn_car/default/ckpt/checkpoint_epoch_95.pth', help='checkpoint to start from')
-    # parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/22-19-2/second_mod1/default/ckpt/checkpoint_epoch_96.pth', help='checkpoint to start from')
-    # parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/pv_rcnn_bevmod1/pv_rcnn_bevmod1/default/ckpt/checkpoint_epoch_100.pth', help='checkpoint to start from')
-    # parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/pillarnet_ori/pillarnet/default/ckpt/checkpoint_epoch_100.pth', help='checkpoint to start from')
-    # parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/ssl_test3/cbgs_res3d_sslstack/default/ckpt/checkpoint_epoch_1000.pth', help='checkpoint to start from')
-    # parser.add_argument('--ckpt', type=str, default=None, help='checkpoint to start from')
+
+    parser.add_argument('--ckpt', type=str, default='/home/ken/workspace/OpenPCDet/output/sslnet/sslnet_ria0.1_hfr.pth', help='checkpoint to start from')
+
     parser.add_argument('--pretrained_model', type=str, default=None, help='pretrained_model')
     parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm'], default='none')
     parser.add_argument('--tcp_port', type=int, default=18888, help='tcp port for distrbuted training')
@@ -59,7 +50,6 @@ def parse_config():
     cfg_from_yaml_file(args.cfg_file, cfg)
     cfg.TAG = Path(args.cfg_file).stem
     cfg.EXP_GROUP_PATH = 'logs'
-    # cfg.EXP_GROUP_PATH = '/'.join(args.cfg_file.split('/')[-2:-1])  # remove 'cfgs' and 'xxxx.yaml'
 
     np.random.seed(1024)
 

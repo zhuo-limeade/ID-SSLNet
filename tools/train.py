@@ -23,16 +23,9 @@ from train_utils.train_utils import train_model
 
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/sslstack/second_ria_hfr.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/kitti_models/second_mod1.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/homemade/coke.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/dsec_models/cbgs_voxel01_res3d_centerpoint.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/kitti_models/cbgs_dyn_pp_centerpoint.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/nuscenes_models/cbgs_voxel01_res3d_centerpoint.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/cid/cid_alpha.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/nuscenes_models/cbgs_voxel0075_voxelnext_mod1.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/nuscenes_models/pp_nofpn.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
-    # parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/kitti_models/second_bevmod1.yaml', help='specify the config for training')# 配置文件，详见{dict}:cfg
+
+    parser.add_argument('--cfg_file', type=str, default='/home/ken/workspace/OpenPCDet/tools/cfgs/sslstack/sslnet_ria_hfr.yaml', help='specify the config for training')
+
 
     parser.add_argument('--batch_size', type=int, default=8, required=False, help='batch size for training')
     parser.add_argument('--epochs', type=int, default=500, required=False, help='number of epochs to train for')
@@ -42,17 +35,14 @@ def parse_config():
     parser.add_argument('--save_to_file', action='store_true', default=False, help='')
     parser.add_argument('--ckpt_save_interval', type=int, default=50, help='number of training epochs')
     parser.add_argument('--ckpt', type=str, default=None, help='checkpoint to start from')
-    # parser.add_argument('--pretrained_model', type=str, default='/home/ken/workspace/OpenPCDet/output/v_rcnn_3dvote/voxel_rcnn_car/default/checkpoint_epoch_2.pth', help='pretrained_model')
-    # parser.add_argument('--pretrained_model', type=str, default='/home/ken/workspace/OpenPCDet/output/22-6-4/second_mod1/default/ckpt/checkpoint_epoch_2.pth', help='pretrained_model')
-    # parser.add_argument('--pretrained_model', type=str, default='/home/ken/workspace/OpenPCDet/output/pillar-1/pointpillar/default/checkpoint_epoch_2.pth', help='pretrained_model')
-    # parser.add_argument('--pretrained_model', type=str, default='/home/ken/workspace/OpenPCDet/tools/second_7862.pth', help='pretrained_model')
+
     parser.add_argument('--pretrained_model', type=str, default=None, help='pretrained_model')
 
     parser.add_argument('--logger_iter_interval', type=int, default=15, help='')
     parser.add_argument('--ckpt_save_time_interval', type=int, default=30000, help='in terms of seconds')
 
     parser.add_argument('--extra_tag', type=str, default='default', help='extra tag for this experiment')
-    parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm'], default='none')# 内核调度方式
+    parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm'], default='none')
 
     
     parser.add_argument('--tcp_port', type=int, default=18888, help='tcp port for distrbuted training')
@@ -67,7 +57,7 @@ def parse_config():
 
     parser.add_argument('--max_waiting_mins', type=int, default=0, help='max waiting minutes')
     
-    parser.add_argument('--use_tqdm_to_record', action='store_true', default=True, # 使用进度条记录
+    parser.add_argument('--use_tqdm_to_record', action='store_true', default=True, 
                         help='if True, the intermediate losses will not be logged to file, only tqdm will be used')
 
     parser.add_argument('--wo_gpu_stat', action='store_true', help='')
@@ -78,11 +68,8 @@ def parse_config():
 
     cfg_from_yaml_file(args.cfg_file, cfg)
     cfg.TAG = Path(args.cfg_file).stem
-    # cfg.EXP_GROUP_PATH = '/'.join(args.cfg_file.split('/')[1:-1])  # remove 'cfgs' and 'xxxx.yaml'
-    cfg.EXP_GROUP_PATH = 'coke4'
-    # cfg.EXP_GROUP_PATH = 'ssl_second_ria_hfr_12'
-    # cfg.EXP_GROUP_PATH = 'second_onlyspres'
-    # cfg.EXP_GROUP_PATH = 'second_mod1_trainval'
+    cfg.EXP_GROUP_PATH = 'test1'
+
     args.use_amp = args.use_amp or cfg.OPTIMIZATION.get('USE_AMP', False)
 
     if args.set_cfgs is not None:
@@ -92,25 +79,25 @@ def parse_config():
 
 
 def main():
-    # 灌入超参字典
+
     args, cfg = parse_config()
-    # （GPU）训练调度方式，默认'none'
+
     if args.launcher == 'none':
         dist_train = False
         total_gpus = 1
     else:
-        # 启动分布式训练
+
         total_gpus, cfg.LOCAL_RANK = getattr(common_utils, 'init_dist_%s' % args.launcher)(
             args.tcp_port, args.local_rank, backend='nccl'
         )
         dist_train = True
-    # 设置batchsize
+
     if args.batch_size is None:
         args.batch_size = cfg.OPTIMIZATION.BATCH_SIZE_PER_GPU
     else:
         assert args.batch_size % total_gpus == 0, 'Batch size should match the number of gpus'
         args.batch_size = args.batch_size // total_gpus
-    # 设置epochs
+
     args.epochs = cfg.OPTIMIZATION.NUM_EPOCHS if args.epochs is None else args.epochs
 
     if args.fix_random_seed:
@@ -228,7 +215,7 @@ def main():
         use_amp=args.use_amp,
         cfg=cfg
     )
-    # 判断对象是否包含属性
+
     if hasattr(train_set, 'use_shared_memory') and train_set.use_shared_memory:
         train_set.clean_shared_memory()
 

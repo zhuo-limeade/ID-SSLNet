@@ -73,7 +73,6 @@ MODEL:
     NAME: CenterPoint
 
     VFE:
-        # NAME: MeanVFE
         NAME: RIA_VFE
 
     BACKBONE_3D:
@@ -101,13 +100,11 @@ MODEL:
         NUM_HM_CONV: 2
         SEPARATE_HEAD_CFG:
             HEAD_ORDER: ['center', 'center_z', 'dim', 'rot']
-            # HEAD_ORDER: ['center', 'center_z', 'dim', 'rot', 'vel']
             HEAD_DICT: {
                 'center': {'out_channels': 2, 'num_conv': 2},
                 'center_z': {'out_channels': 1, 'num_conv': 2},
                 'dim': {'out_channels': 3, 'num_conv': 2},
                 'rot': {'out_channels': 2, 'num_conv': 2},
-                # 'vel': {'out_channels': 2, 'num_conv': 2},
             }
 
         TARGET_ASSIGNER_CONFIG:
@@ -121,7 +118,6 @@ MODEL:
                 'cls_weight': 1.0,
                 'loc_weight': 0.5,
                 'code_weights': [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.5]
-                # 'code_weights': [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2, 1.0, 1.0]
             }
 
         POST_PROCESSING:

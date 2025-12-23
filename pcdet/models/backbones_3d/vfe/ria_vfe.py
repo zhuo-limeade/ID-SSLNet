@@ -76,19 +76,19 @@ class RIA_VFE(VFETemplate):
         refined_feature = self.rfe(voxel_features, batch_dict['batch_size'])
         refined_voxel, foreground_point_num, background_point_num = self.foreground_split(refined_feature, voxel_features)
         # voxel_features:[N, M, C], voxel_num_points
-        # 求每个voxel内 所有点的和
+
         # eg:SECOND  shape (Batch*16000, 5, 4) -> (Batch*16000, 4)
         points_mean = refined_voxel[:, :, :].sum(dim=1, keepdim=False)
-        # 正则化项， 保证每个voxel中最少有一个点，防止除0
+
         normalizer = torch.clamp_min(voxel_num_points.view(-1, 1), min=1.0).type_as(voxel_features)
-        # 求每个voxel内点坐标的平均值
+
         points_mean = points_mean / normalizer
         # print(points_mean[...,4:7].shape, normalizer.shape, foreground_point_num.shape)
         foreground_point_num = torch.clamp_min(foreground_point_num, min=1.0)
         background_point_num = torch.clamp_min(background_point_num, min=1.0)
         points_mean[...,4:7] = points_mean[...,4:7]*normalizer/foreground_point_num
         points_mean[...,-1:] = points_mean[...,-1:]*normalizer/background_point_num
-        # 将处理好的voxel_feature信息重新加入batch_dict中
+
         batch_dict['voxel_features'] = points_mean.contiguous()
 
         return batch_dict
