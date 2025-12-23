@@ -38,6 +38,7 @@ class RIA_VFE(VFETemplate):
         super().__init__(model_cfg=model_cfg)
         self.num_point_features = 9
         self.rfe = Reflection_Feature_Extractor(4, 10)
+        self.threshold = 0.1
 
     def get_output_feature_dim(self):
         return self.num_point_features
@@ -47,13 +48,13 @@ class RIA_VFE(VFETemplate):
         foreground_voxel = refined_voxel.clone()
         background_voxel = refined_voxel.clone()
         foreground_point = voxel_features.clone()
-        foreground_voxel[refined_voxel<=.5] = 0
-        background_voxel[refined_voxel>.5] = 0
-        a = refined_voxel<=.5
+        foreground_voxel[refined_voxel<=self.threshold] = 0
+        background_voxel[refined_voxel>self.threshold] = 0
+        a = refined_voxel<=self.threshold
         a = torch.cat([a]*4, dim=-1)
         foreground_point[a==1] = 0
-        foreground_point_num = refined_voxel>.5
-        background_point_num = refined_voxel<=.5
+        foreground_point_num = refined_voxel>self.threshold
+        background_point_num = refined_voxel<=self.threshold
         foreground_point_num = foreground_point_num.squeeze(dim=-1).sum(dim=1).unsqueeze(-1)
         background_point_num = background_point_num.squeeze(dim=-1).sum(dim=1).unsqueeze(-1)
         return torch.concat([voxel_features,foreground_point[...,:-1], foreground_voxel, background_voxel, ],dim=-1), foreground_point_num, background_point_num

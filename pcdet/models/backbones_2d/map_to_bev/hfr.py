@@ -10,6 +10,7 @@ class HeightFeatureRefineNet(nn.Module):
         super().__init__()
         self.model_cfg = model_cfg
         self.num_bev_features = self.model_cfg.NUM_BEV_FEATURES
+        self.num_height = self.model_cfg.NUM_HEIGHT if self.model_cfg.NUM_HEIGHT else 10
         self.conv1d_sp = spconv.SparseSequential(
             spconv.SubMConv3d(128, 128, (3,1,1), padding=(1,0,0), bias=False, indice_key='subm_h21'),
             # nn.BatchNorm1d(10,eps=1e-3, momentum=0.01),
@@ -21,13 +22,22 @@ class HeightFeatureRefineNet(nn.Module):
         )
         
         self.linear = nn.Sequential(
-            nn.Linear(10, 5),
+            nn.Linear(self.num_height, self.num_height//2),
             nn.ReLU(),
-            nn.Linear(5, 4),
+            nn.Linear(self.num_height//2, self.num_height//4),
             nn.ReLU(),
-            nn.Linear(4, 1),
+            nn.Linear(self.num_height//4, 1),
             nn.Sigmoid(),
         )
+        # self.linear = nn.Sequential(
+        #     nn.Linear(10, 5),
+        #     nn.ReLU(),
+        #     nn.Linear(5, 4),
+        #     nn.ReLU(),
+        #     nn.Linear(4, 1),
+        #     nn.Sigmoid(),
+        # )
+
 
         self.aspp = ASPPNeck(model_cfg, self.model_cfg.get('INPUT_CHANNELS'))
 
