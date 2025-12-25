@@ -7,9 +7,6 @@ import tqdm
 
 from pcdet.models import load_data_to_gpu
 from pcdet.utils import common_utils
-import open3d
-from visual_utils import open3d_vis_utils as V
-
 
 
 def statistics_info(cfg, ret_dict, metric, disp_dict):
@@ -22,8 +19,7 @@ def statistics_info(cfg, ret_dict, metric, disp_dict):
         '(%d, %d) / %d' % (metric['recall_roi_%s' % str(min_thresh)], metric['recall_rcnn_%s' % str(min_thresh)], metric['gt_num'])
 
 
-def eval_one_epoch(cfg, args, model, dataloader, epoch_id, 
-                   logger, dist_test=False, result_dir=None, show_result=True):
+def eval_one_epoch(cfg, args, model, dataloader, epoch_id, logger, dist_test=False, result_dir=None):
     result_dir.mkdir(parents=True, exist_ok=True)
 
     final_output_dir = result_dir / 'final_result' / 'data'
@@ -58,46 +54,23 @@ def eval_one_epoch(cfg, args, model, dataloader, epoch_id,
 
     if cfg.LOCAL_RANK == 0:
         progress_bar = tqdm.tqdm(total=len(dataloader), leave=True, desc='eval', dynamic_ncols=True)
-    
-    total_params = sum(p.numel() for p in model.parameters())
-    print("模型的总参数数量:", total_params)
-    time_dict = np.zeros(5)
-
     start_time = time.time()
     for i, batch_dict in enumerate(dataloader):
         load_data_to_gpu(batch_dict)
-        # print(batch_dict['frame_id'])
+
         if getattr(args, 'infer_time', False):
             start_time = time.time()
-        
+
         with torch.no_grad():
-            s = time.time()
             pred_dicts, ret_dict = model(batch_dict)
-        # time_dict[0] += batch_dict['time0']
-        # time_dict[1] += batch_dict['time1']
-        # time_dict[2] += batch_dict['time2']
-        # time_dict[3] += batch_dict['time3']
-        # time_dict[4] += batch_dict['time4']
-        if show_result and batch_dict['batch_size']==1 and i>300:
-            score_indices = pred_dicts[0]['pred_scores']>.5-1e-5
-            V.draw_scenes(points=batch_dict['points'][:, 1:5], 
-                gt_boxes=batch_dict['gt_boxes'][0], 
-                ref_boxes=pred_dicts[0]['pred_boxes'][score_indices, :],
-                ref_scores=pred_dicts[0]['pred_scores'][score_indices],
-                ref_labels=pred_dicts[0]['pred_labels'][score_indices],
-                # window_name='22-19-'+batch_dict['frame_id'][0])
-                # window_name='ori-'+batch_dict['frame_id'][0]
-                )
 
         disp_dict = {}
-    
+
         if getattr(args, 'infer_time', False):
             inference_time = time.time() - start_time
             infer_time_meter.update(inference_time * 1000)
             # use ms to measure inference time
             disp_dict['infer_time'] = f'{infer_time_meter.val:.2f}({infer_time_meter.avg:.2f})'
-        
-
 
         statistics_info(cfg, ret_dict, metric, disp_dict)
         annos = dataset.generate_prediction_dicts(
@@ -108,11 +81,7 @@ def eval_one_epoch(cfg, args, model, dataloader, epoch_id,
         if cfg.LOCAL_RANK == 0:
             progress_bar.set_postfix(disp_dict)
             progress_bar.update()
-        # if i == 1000:
-        #     print(1000/(time.time()-start_time))
-        #     exit()
-    print(time_dict*1000/len(dataloader))
-    
+
     if cfg.LOCAL_RANK == 0:
         progress_bar.close()
 

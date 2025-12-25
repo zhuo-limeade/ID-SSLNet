@@ -82,11 +82,8 @@ def train_one_epoch(model, optimizer, train_loader, model_func, lr_scheduler, ac
             losses_m.update(loss.item() , batch_size)
             
             disp_dict.update({
-                'loss': loss.item(), 
-                # 'l1':tb_dict['l1_loss'],#'fv_loc':tb_dict['rpn_loss_loc_fv'],'fv_cls':tb_dict['rpn_loss_cls_fv'],
-                'lr': cur_lr, 'd_time': f'{data_time.val:.2f}({data_time.avg:.2f})',
-                'f_time': f'{forward_time.val:.2f}({forward_time.avg:.2f})', 'b_time': f'{batch_time.val:.2f}({batch_time.avg:.2f})',
-                # 'fv_loc_loss':tb_dict['rpn_loss_loc_fv'],'fv_cls_loss':tb_dict['rpn_loss_cls_fv']
+                'loss': loss.item(), 'lr': cur_lr, 'd_time': f'{data_time.val:.2f}({data_time.avg:.2f})',
+                'f_time': f'{forward_time.val:.2f}({forward_time.avg:.2f})', 'b_time': f'{batch_time.val:.2f}({batch_time.avg:.2f})'
             })
             
             if use_logger_to_record:

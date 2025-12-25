@@ -7,50 +7,13 @@ import open3d
 import torch
 import matplotlib
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 box_colormap = [
     [1, 1, 1],
     [0, 1, 0],
-    [0, 0, 1],
-    [1, 0, 1],
-    [1, 1, 0],
     [0, 1, 1],
-    [0, .5, 1],
-    [.5, .5, 1],
-    [.5,1,0],
-    [.5,0,1],
-    [.5,.2,1],
+    [1, 1, 0],
 ]
-class_to_name = {
-        1:'worker',
-        2:'car',
-        3:'sign',
-    }
-# class_to_name = {
-#         1:'car',
-#         2:'truck',
-#         3:'construction_vehicle',
-#         4:'bus',
-#         5:'trailer',
-#         6:'barrier',
-#         7:'motorcycle',
-#         8:'bicycle',
-#         9:'pedestrian',
-#         10:'traffic_cone',
-#     }
-
-
-# class_to_name = {
-#         1:'roundabout',
-#         2:'go_straight',
-#         3:'turn_left',
-#         4:'turn_right',
-#         5:'left_straight',
-#         6:'right_straight',
-#         7:'left_right'
-#     }
 
 
 def get_coor_colors(obj_labels):
@@ -72,24 +35,20 @@ def get_coor_colors(obj_labels):
     return label_rgba
 
 
-def draw_scenes(points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scores=None, point_colors=None, draw_origin=False):
+def draw_scenes(points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scores=None, point_colors=None, draw_origin=True):
     if isinstance(points, torch.Tensor):
         points = points.cpu().numpy()
     if isinstance(gt_boxes, torch.Tensor):
         gt_boxes = gt_boxes.cpu().numpy()
     if isinstance(ref_boxes, torch.Tensor):
         ref_boxes = ref_boxes.cpu().numpy()
-        # ref_boxes[:,3] = .2
-    if isinstance(ref_scores, torch.Tensor):
-        ref_scores = ref_scores.cpu().numpy()
-    if isinstance(ref_labels, torch.Tensor):
-        ref_labels = ref_labels.cpu().numpy()
 
     vis = open3d.visualization.Visualizer()
     vis.create_window()
 
     vis.get_render_option().point_size = 1.0
     vis.get_render_option().background_color = np.zeros(3)
+
     # draw origin
     if draw_origin:
         axis_pcd = open3d.geometry.TriangleMesh.create_coordinate_frame(size=1.0, origin=[0, 0, 0])
@@ -98,18 +57,6 @@ def draw_scenes(points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scor
     pts = open3d.geometry.PointCloud()
     pts.points = open3d.utility.Vector3dVector(points[:, :3])
 
-    intensity_values = points[:, 3]  # 假设反射率是存储在3通道中
-
-    # 归一化反射率值到 [0, 1] 范围
-    intensity_min = np.min(intensity_values)
-    intensity_max = np.max(intensity_values)
-    intensity_normalized = (intensity_values - intensity_min) / (intensity_max - intensity_min)
-
-    # 使用 matplotlib 的色表（例如 'viridis'）来映射反射率值
-    colormap = plt.get_cmap("viridis")
-    point_colors = colormap(intensity_normalized)[:, :3]  # 获取 RGB 颜色，去除 alpha 通道
-    point_colors = None
-    # 将生成的颜色赋值给点云
     vis.add_geometry(pts)
     if point_colors is None:
         pts.colors = open3d.utility.Vector3dVector(np.ones((points.shape[0], 3)))
@@ -117,17 +64,11 @@ def draw_scenes(points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scor
         pts.colors = open3d.utility.Vector3dVector(point_colors)
 
     if gt_boxes is not None:
-        vis = draw_box(vis, gt_boxes, (1, 0, 0))
-        print(gt_boxes)
+        vis = draw_box(vis, gt_boxes, (0, 0, 1))
 
     if ref_boxes is not None:
-        vis = draw_box(vis, ref_boxes[ref_scores>.1], (0, 1, 0), ref_labels, ref_scores)
-        for i in ref_labels[ref_scores>.1]:
-            print(class_to_name[i] )
-    # 获取渲染选项
-    opt = vis.get_render_option()
-    # 设置点的大小
-    opt.point_size = 5.0
+        vis = draw_box(vis, ref_boxes, (0, 1, 0), ref_labels, ref_scores)
+
     vis.run()
     vis.destroy_window()
 
